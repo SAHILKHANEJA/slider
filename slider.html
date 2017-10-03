@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <!-- <link type="text/css" rel="stylesheet" href="/static/css/materialize.min.css"  media="screen,projection"/> -->
+      <link rel="stylesheet" href="materialize/css/materialize.min.css">
+      <!-- In <head> -->
+      <link href="nouislider.min.css" rel="stylesheet">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <!-- In <body> -->
+      <script src="nouislider.min.js"></script>
+      <script src="wNumb.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+      <script src="materialize/js/materialize.min.js"></script>
+      <title> Page </title>
+      <style type="text/css">
+        /*.noUi-base{
+          background-color: red;
+        }*/
+        .radio-btn:before,.radio-btn:after{
+          opacity: 0;
+        }
+        .radio-btn{
+          padding: 0px !important;
+          margin-bottom: 20px;
+        }
+        .radio-a{
+          width: inherit;
+          background-color: white;
+          color:#4f5785;
+          padding: 0px;
+        }
+        .radio-alpha{
+          width: inherit;
+          background-color:#272934;
+          color:white;
+          padding: 0px;
+        }
+        .radio-a:hover{
+          background-color: inherit;
+        }
+        /*.with-gap:not:checked+label a{
+          background-color:#ffffff !important;
+        }
+        }*/
+        .with-gap:checked+label a{
+          background-color:#4f5785;
+          color: white;
+        }
+        .tab a{
+          color: rgba(39, 41, 52, 0.5) !important;
+          font-size: 12px !important;
+          padding: 0px !important;
+        }
+        a.active{
+          color: #4f5785 !important;
+        }
+        .tabs .indicator {
+          background-color:#4f5785 !important;
+        }
+        .noUi-horizontal .noUi-handle{
+          top:-8px;
+          border-radius: 50%;
+          height: 20px;
+          width: 20px;
+        }
+        .noUi-handle:after, .noUi-handle:before{
+          display: none;
+        }
+        label>div{
+          opacity: 0.6;
+        }
+        .radio-footer:checked+label div{
+          opacity:1;
+        }
+      </style>
+    </head>
+<body style="background-color:#E0E0E0">
+  <nav>
+    <div class="nav-wrapper center" style="background-color: #272934;">
+      <a href="#" class="brand-logo"><img src="cronlogo.png" width="52" height="22"/></a>
+    </div>
+  </nav>
+  <main>
+  <div class="row" style="margin-bottom: 10px">
+    <div class="col s12" style="padding: 0px">
+      <ul class="tabs">
+        <li class="tab col s4"><a href="#test1">Views</a></li>
+        <li class="tab col s4"><a class="active" href="#test2">Intrusion Archive</a></li>
+        <li class="tab col s4"><a href="#test4">Unit Status</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="row valign-wrapper" style="background-color:#4f5785;height: 60px;margin-bottom:0px">
+    <div class="col s4 center" style="color:white;font-size: 20px">
+      Area_01
+    </div>
+    <div class="col s4 offset-s4 center" style="color:white;font-size:11px">
+      14 Jan /2200 hrs
+    </div>
+  </div>
+  <div class="row" style="margin:10px;height: 218px;background-color:white;position:relative;">
+    <div class="row" style="margin-bottom: 60px">
+      <div class="col s12">
+        <div style="text-align:left;margin-top:16px;padding:0px" id="tx_rx" class="col s6">
+          <input class="with-gap" name="unit" type="radio" id="tx" value="tx" checked />
+          <label for="tx" class="radio-btn" style="width:80px;">
+            <a class="btn radio-a" style="padding:0px;font-size:9px">Camera_TX</a>
+          </label>
+          <input class="with-gap" name="unit" type="radio" id="rx" value="rx" />
+          <label for="rx" class="radio-btn" style="width:80px;margin-left:-5px;">
+            <a class="btn radio-a" style="padding:0px;font-size:9px;">Camera_RX</a>
+          </label>
+        </div>
+        <div style="text-align:right;margin-top:16px;" class="playback-show col s6">
+          <input class="with-gap" name="date" type="radio" id="day_b_y"/>
+          <label for="day_b_y" class="radio-btn" ><a class="btn radio-a" id="date0" style="width:32px;overflow:hidden;text-transform: capitalize" data-month=""></a></label>
+          <input class="with-gap" name="date" type="radio" id="yesterday"/>
+          <label for="yesterday" class="radio-btn" style="margin-left: -5px"><a style="width:32px;overflow:hidden;text-transform: capitalize" class="btn radio-a" id="date1" data-month=""></a></label>
+          <input class="with-gap" name="date" type="radio" id="today" checked/>
+          <label for="today" class="radio-btn" style="margin-left: -5px"><a class="btn radio-a" id="date2" style="width:32px;overflow:hidden;text-transform: capitalize" data-month=""></a></label>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div id="test-slider" style="width:88%;left:8%;height: 6px;">
+      </div>
+    </div>
+    <div style="text-align: center" id="playback_live">
+      <input class="with-gap" name="options" type="radio" id="live" value="live" checked />
+      <label for="live" class="radio-btn" style="position: absolute;bottom: 0px;left: 0px;margin-bottom: 10px;width: 50%;"><a class="btn radio-alpha col s12">Live</a></label>
+      <input class="with-gap" name="options" type="radio" id="playback" value="playback" />
+      <label for="playback" class="radio-btn" style="position:absolute;bottom: 0px;margin-bottom: 10px;width: 50%;right:0px"><a class="btn radio-alpha col s12">Playback</a></label> 
+    </div> 
+  </div>
+  <div class="row valign-wrapper" style="height: 60px;background-color:white;margin-bottom:5px;font-weight:500">
+    <div class="col s6 center" style="font-size: 20px;font-family:Roboto;">
+      Area_01
+    </div>
+    <div class="col s6" style="font-size: 11px;font-family:Roboto;text-align:right;margin-right:5px">
+      14 Jan /2200 hrs
+    </div>
+  </div>
+  <div class="row valign-wrapper" style="height: 60px;background-color:white;margin-bottom:5px;font-weight:500">
+    <div class="col s6 center" style="font-size: 20px;font-family:Roboto;">
+      Area_02
+    </div>
+    <div class="col s6" style="font-size: 11px;font-family:Roboto;text-align:right;margin-right:5px">
+      14 Jan /2200 hrs
+    </div>
+  </div>
+  <div class="row valign-wrapper" style="height: 60px;background-color:white;margin-bottom:5px;font-weight:500">
+    <div class="col s6 center" style="font-size: 20px;font-family:Roboto;">
+      Area_03
+    </div>
+    <div class="col s6" style="font-size: 11px;font-family:Roboto;text-align:right;margin-right:5px">
+      14 Jan /2200 hrs
+    </div>
+  </div>
+  <div class="row valign-wrapper" style="height: 60px;background-color:white;margin-bottom:5px;font-weight:500;">
+    <div class="col s6 center" style="font-size: 20px;font-family:Roboto;">
+      Area_04
+    </div>
+    <div class="col s6" style="font-size: 11px;font-family:Roboto;text-align:right;margin-right:5px">
+      14 Jan /2200 hrs
+    </div>
+  </div>
+  <div class="row valign-wrapper" style="height: 60px;background-color:white;margin-bottom: 70px;font-weight:500;">
+    <div class="col s6 center" style="font-size: 20px;font-family:Roboto;">
+      Area_05
+    </div>
+    <div class="col s6" style="font-size: 11px;font-family:Roboto;text-align:right;margin-right:5px">
+      14 Jan /2200 hrs
+    </div>
+  </div>
+  </main>
+  <div class="row" style="margin-bottom: 0px">
+    <div class="col s12 valign-wrapper" style="height: 60px;background-color: white;position: fixed;bottom: 0px">
+      <div class="col s3 center">
+        <input class="radio-footer" name="choices" type="radio" id="mapview" value="mapview" checked />
+        <label for="mapview" class="radio-btn">
+          <div>
+            <img src="mapview.svg" height="24px" width="24px" />
+            <p style="margin: -6px;font-weight: 600"> Map View</p>
+          </div>
+        </label>
+      </div>
+      <div class="col s3 center">
+        <input class="radio-footer" name="choices" type="radio" id="camera" value="camera"  />
+        <label for="camera" class="radio-btn">
+          <div>
+            <img src="cctv.svg" height="24px" width="24px"/>
+            <p style="margin: -6px;font-weight: 600"> Camera</p>
+          </div>
+        </label>
+      </div>
+      <div class="col s3 center">
+        <input class="radio-footer" name="choices" type="radio" id="recording" value="recording"  />
+        <label for="recording" class="radio-btn">
+          <div>
+            <img src="recording.svg" height="24px" width="24px" />
+            <p style="margin: -6px;font-weight: 600"> Recording</p>
+          </div>
+        </label>
+      </div>
+      <div class="col s3 center">
+        <input class="radio-footer" name="choices" type="radio" id="message" value="message"  />
+        <label for="message" class="radio-btn">
+          <div>
+            <img src="message.svg" height="24px" width="24px" />
+            <p style="margin: -6px;font-weight: 600"> Message</p>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+
+
+ <!--  <div style="text-align: center;padding: 30px">
+
+   <div style="padding: 30px">
+    <a class="waves-effect waves-light btn" onclick="back()" id="back" >Back</a>
+    <a class="waves-effect waves-light btn" onclick="ahead()" id="ahead" >Ahead</a>
+  </div> 
+  
+  </div> -->
+
+  <!-- <div style="text-align: center" id="playback_live">
+      <input class="with-gap" name="options" type="radio" id="live" value="live" checked />
+      <label for="live" class="radio-btn" style="width:150px;"><a class="btn radio-a">Live</a></label>
+      <input class="with-gap" name="options" type="radio" id="playback" value="playback" />
+      <label for="playback" class="radio-btn" style="width:150px;margin-left: -5px"><a class="btn radio-a">Playback</a></label>
+  </div>
+   <div class="row valign-wrapper">
+    <div class="playback-show col s2 offset-s4" style="display:none;text-align: right"><b>Select hours</b></div>
+    <div class="playback-show col s2" style="display:none;margin-left: 0px !important">
+      <select id="hours" style="display: inherit !important;" onchange="changeHours(this)">
+
+      </select>
+    </div>
+  </div>
+  <div class="row valign-wrapper">
+    <div class="playback-show col s2 offset-s4" style="display:none;text-align: right"><b>Select minutes</b></div>
+    <div class="playback-show col s2" style="display:none;margin-left: 0px !important">
+      <select id="minutes" style="display: inherit !important;" onchange="changeMinutes(this)">
+
+      </select>
+    </div>
+    <a class="waves-effect waves-light btn playback-show" onclick="reset()" id="reset" style="display: none">Reset</a>
+  </div>
+  <div>
+  <div style="text-align: center;display:none !important;" class="playback-show">
+      <input class="with-gap" name="date" type="radio" id="day_b_y"/>
+      <label for="day_b_y" class="radio-btn" style="width:150px;"><a class="btn radio-a" id="date0"></a></label>
+      <input class="with-gap" name="date" type="radio" id="yesterday"/>
+      <label for="yesterday" class="radio-btn" style="width:150px;margin-left: -5px"><a class="btn radio-a" id="date1"></a></label>
+      <input class="with-gap" name="date" type="radio" id="today" checked/>
+      <label for="today" class="radio-btn" style="width:150px;margin-left: -5px"><a class="btn radio-a" id="date2"></a></label>
+  </div>
+  </div> -->
+  <script src="slider.js"></script>
+</body>
+</html>
